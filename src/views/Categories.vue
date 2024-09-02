@@ -26,15 +26,32 @@
       this.fetchCategories();
     },
     methods: {
-  async fetchCategories() {
-    try {
-      const response = await axios.get('http://localhost:8000/api/categories'); // Replace with your API endpoint
-      console.log(response.data); // Log the data to see if it's correct
-      this.categories = response.data;
-    } catch (error) {
-      console.error('Error fetching categories:', error);
+      async fetchCategories() {
+  try {
+    const token = localStorage.getItem('authToken');
+    console.log('Token:', token); // Debugging line
+
+    if (!token) {
+      throw new Error('No token found');
+    }
+
+    const response = await axios.get('http://localhost:8000/api/categories', {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    console.log(response.data); // Log the data to see if it's correct
+    this.categories = response.data;
+  } catch (error) {
+    console.error('Error fetching categories:', error);
+    if (error.response && error.response.status === 401) {
+      console.error('Unauthorized: Check your token and authentication.');
     }
   }
+}
+
+
 }
 
   };
